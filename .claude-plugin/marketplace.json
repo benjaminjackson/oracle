@@ -1,0 +1,18 @@
+{
+  "name": "oracle",
+  "owner": {
+    "name": "Benjamin Jackson",
+    "email": "ben@benjaminjackson.co"
+  },
+  "metadata": {
+    "description": "A one-shot Fable answer for quick questions, cheap enough to reach for constantly",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "oracle",
+      "description": "Ask the Oracle for a fast, cheap answer: the skill spawns a bare headless Fable session for ~1.3k tokens of overhead, and the oracle agent is a fallback subagent for when the headless call can't run (auth, sandbox), at ~6k tokens.",
+      "source": "./oracle"
+    }
+  ]
+}
