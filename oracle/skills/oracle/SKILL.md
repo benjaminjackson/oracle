@@ -24,7 +24,7 @@ echo "$out" | jq -r '.result'
 echo "$out" | jq -r '(.usage.input_tokens + .usage.cache_creation_input_tokens + .usage.cache_read_input_tokens) as $in | (.total_cost_usd * 1000000 | round / 1000000) as $cost | "[\($in) in / \(.usage.output_tokens) out tokens · $\($cost)]"'
 ```
 
-Notes: `< /dev/null` is required — `claude -p` otherwise stalls 3s waiting for stdin and prints a warning into the output. `--bare` (API key, off-quota) is used when `ANTHROPIC_API_KEY` is set, else `--safe-mode` (OAuth, on-quota). `--output-format json` is required to get cost/usage data back instead of plain text; the two `jq` calls split the JSON into the answer line and the stats line.
+Notes: `--tools "WebSearch"` stays unconditional — the schema costs a measured ~600 input tokens (evals Phase 0), which is noise; omitting the flag loads the CLI's ~17k-token default toolset instead. `< /dev/null` is required — `claude -p` otherwise stalls 3s waiting for stdin and prints a warning into the output. `--bare` (API key, off-quota) is used when `ANTHROPIC_API_KEY` is set, else `--safe-mode` (OAuth, on-quota). `--output-format json` is required to get cost/usage data back instead of plain text; the two `jq` calls split the JSON into the answer line and the stats line.
 
 Rules:
 - Every token in `oracle_question.txt` is Fable-priced. Pass the question and the few lines of context it genuinely needs — never file dumps or conversation history.

@@ -35,7 +35,7 @@ One skill, one agent, same job — answer a question as concisely as possible �
 
 ### oracle (skill)
 
-The default path. Writes your question to a scratch file, then shells out to a bare headless Fable session (`claude -p --safe-mode` or `--bare`, whichever fits your setup) with a stripped system prompt. No agent scaffolding, no tool loadout beyond `WebSearch` — about 1.3k tokens of overhead per question. Every answer comes back with the exact token count and dollar cost for that call, so you're not guessing.
+The default path. Writes your question to a scratch file, then shells out to a bare headless Fable session (`claude -p --safe-mode` or `--bare`, whichever fits your setup) with a stripped system prompt. No agent scaffolding, no tool loadout beyond `WebSearch` — measured at ~900 input tokens of overhead per question, nearly all of it cache reads (the `WebSearch` schema is ~600 of those; omitting `--tools` entirely would load the CLI's ~17k default toolset instead). Every answer comes back with the exact token count and dollar cost for that call, so you're not guessing.
 
 #### Usage
 
@@ -59,7 +59,10 @@ The skill falls back to this agent automatically if the headless command fails, 
 oracle/.claude-plugin/plugin.json # oracle plugin manifest
 oracle/agents/oracle.md           # fallback agent
 oracle/skills/oracle/SKILL.md     # headless-Fable skill
+evals/                            # permanent eval harness + committed results
 ```
+
+The `evals/` directory holds a bash+jq eval harness (corpus, generation, Sonnet judge, reporting) used to tune the skill's `--effort`/prompt configuration against answer quality per output token. See `evals/README.md`.
 
 ## Author
 
