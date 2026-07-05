@@ -35,7 +35,7 @@ One skill, one agent, same job — answer a question as concisely as possible �
 
 ### oracle (skill)
 
-The default path. Writes your question to a scratch file, then shells out to a bare headless Fable session (`claude -p --safe-mode` or `--bare`, whichever fits your setup) with a stripped system prompt. No agent scaffolding, no tool loadout beyond `WebSearch` — about 1.3k tokens of overhead per question.
+The default path. Writes your question to a scratch file, then shells out to a bare headless Fable session (`claude -p --safe-mode` or `--bare`, whichever fits your setup) with a stripped system prompt. No agent scaffolding, no tool loadout beyond `WebSearch` — about 1.3k tokens of overhead per question. Every answer comes back with the exact token count and dollar cost for that call, so you're not guessing.
 
 #### Usage
 
