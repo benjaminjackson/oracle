@@ -86,6 +86,60 @@ Ablations on the shipping config (mean of 3, tiny probe question):
 - Judge `--json-schema` returns the structured verdict as a JSON *string* in
   `.result`; `judge_one.sh` parses either shape.
 
-### Stage A / Stage B
+### Stage A — screen (2026-07-05)
 
-_(pending)_
+7 configs × 25-question stratified subset (5 anchors + 20 open-ended) × 1
+repeat; pairwise vs incumbent `p0-default`, double-judged position-swapped.
+
+| Config | Mean out tokens | W–T–L vs incumbent | Net losses | Anchors |
+|---|---|---|---|---|
+| p0-default (incumbent) | 477 | — | — | 5/5 |
+| p0-low | **410 (−14%)** | 3–19–3 | 0 | 5/5 |
+| p0-medium | 490 (+3%) | 3–19–3 | 0 | 5/5 |
+| p1-default (CoD) | 554 (+16%) | 4–10–11 | 7 | 5/5 |
+| p1-low (CoD) | 458 (−4%) | 3–11–10 | 7 | 5/5 |
+| p1-medium (CoD) | 560 (+17%) | 5–13–7 | 2 | 5/5 |
+| p2-default (one-liner) | 121 (−75%) | 0–2–23 | 23 | 5/5 |
+
+Findings:
+
+- **Chain-of-Draft loses on both axes**: more output tokens than the
+  incumbent at default/medium effort *and* clearly worse pairwise quality at
+  every effort level. On a prompt that already suppresses visible reasoning,
+  the sketch is a surcharge, not a substitute (HANDOFF Q3: answered, no).
+- **Lower effort is quality-neutral but saves only ~14%** (`p0-low`), below
+  the ≥25% adoption threshold. `p0-medium` saves nothing.
+- **One-liner control demolished** (0W–23L) — the corpus and judge
+  distinguish quality; brevity alone doesn't win.
+- **Length-bias tripwire: clear.** In CoD comparisons the longer answer lost
+  most decisive pairs; anchor accuracy was flat everywhere.
+
+### Follow-up screen — "caveman" density prompts (2026-07-05)
+
+Owner-suggested variants, same 25-question screen:
+
+| Config | Mean out tokens | W–T–L vs incumbent | Anchors |
+|---|---|---|---|
+| p3-caveman (instructed: strip filler, keep every fact) | 629 (+32%) | **14–9–2** | 5/5 |
+| p4-caveman-prompt (system prompt itself telegraphic) | 707 (+48%) | 7–9–9 | 5/5 |
+
+- Neither compresses: told to cut filler, Fable adds *substance* instead.
+- `p3` is a real quality win (judge citations name quantified impacts and
+  extra correct insights, not bulk; the same judge made longer CoD answers
+  lose, so this isn't verbosity bias) — but at +32% output tokens it moves
+  the wrong direction for this eval's objective. Documented as the known
+  "deluxe Oracle" option.
+- Demonstrating the register (`p4`) is strictly worse than describing it.
+
+### Decision (rule applied)
+
+Non-inferior configs: p0-low (410), p0-medium (490), p3-caveman (629, better
+than incumbent), p4 (707). Lowest-token as-good config is `p0-low` at a 14%
+saving — **below the ≥25% adoption bar. The incumbent (`p0-default`:
+current prompt, default effort, unconditional `--tools "WebSearch"`) is
+retained unchanged.** Stage B was cancelled by the owner mid-run as moot —
+the adoption-blocking token arithmetic is judge-independent.
+
+Calibration: `results/calibration_sheet.md` holds 18 blind pairs for human
+audit of the judge (`calibrate.sh score` after filling in
+`results/calibration_human.tsv`).
