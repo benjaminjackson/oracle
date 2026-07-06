@@ -5,7 +5,6 @@
 #  c) default-effort identification: output-token distributions on reasoning probes
 #  d) judge --json-schema shape check (Sonnet)
 set -u
-cd "$(dirname "$0")"
 mkdir -p results/phase0
 
 mode=--safe-mode

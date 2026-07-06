@@ -3,7 +3,6 @@
 #   judge_one.sh pw <base> <chall> <qid> <rep> <orient>
 #   judge_one.sh anchor <cfg> <qid> <rep>
 set -u
-cd "$(dirname "$0")"
 kind=$1; shift
 
 mode=--safe-mode

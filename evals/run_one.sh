@@ -3,7 +3,6 @@
 # Question text goes to claude -p via stdin (quote-safe; avoids bash-3.2 heredoc
 # bug and the variadic --tools flag swallowing a positional prompt).
 set -u
-cd "$(dirname "$0")"
 cfg=$1 qid=$2 rep=$3
 out_file="results/raw/${cfg}__${qid}__r${rep}.json"
 

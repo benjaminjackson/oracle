@@ -5,7 +5,6 @@
 # Human verdicts go in results/calibration_human.tsv as "<pair_id>\tA|B|tie";
 # then run: calibrate.sh score
 set -u
-cd "$(dirname "$0")"
 
 KEY=results/calibration_key.tsv
 SHEET=results/calibration_sheet.md

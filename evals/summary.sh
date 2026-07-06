@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # jq-only reporting over results/raw and results/judgments.
 set -u
-cd "$(dirname "$0")"
 
 echo "== Generation stats per config =="
 cat results/raw/*.json 2>/dev/null | jq -s -r '

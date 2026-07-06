@@ -7,7 +7,7 @@
 #       Absolute grading of anchor questions against recorded truth.
 # Resume-safe: existing judgment files are skipped.
 set -u
-cd "$(dirname "$0")"
+SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 MODE="${1:-}"; shift || true
 BASE="" CHALL="" ONLY="" IDS="" REPEATS=1 PAR=4
@@ -65,6 +65,6 @@ esac
 n=$(wc -l < "$tasks" | tr -d ' ')
 echo "judge.sh $MODE: $n judgments to make (parallel=$PAR)" >&2
 [ "$n" -eq 0 ] && { rm -f "$tasks"; exit 0; }
-xargs -P "$PAR" -n "$N_ARGS" ./judge_one.sh < "$tasks"
+xargs -P "$PAR" -n "$N_ARGS" "$SELF_DIR/judge_one.sh" < "$tasks"
 rm -f "$tasks"
 echo "judge.sh: done. Rerun to retry any FAIL lines." >&2

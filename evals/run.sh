@@ -3,7 +3,7 @@
 # Resume-safe: a non-empty output file means done; rerun to fill gaps.
 # Usage: run.sh [--configs id1,id2] [--ids file-of-question-ids] [--repeats N] [--parallel N]
 set -u
-cd "$(dirname "$0")"
+SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 ONLY="" IDS="" REPEATS=1 PAR=4
 while [ $# -gt 0 ]; do
@@ -35,6 +35,6 @@ done > "$tasks"
 n=$(wc -l < "$tasks" | tr -d ' ')
 echo "run.sh: $n calls to make (parallel=$PAR)" >&2
 [ "$n" -eq 0 ] && { rm -f "$tasks"; exit 0; }
-xargs -P "$PAR" -n 3 ./run_one.sh < "$tasks"
+xargs -P "$PAR" -n 3 "$SELF_DIR/run_one.sh" < "$tasks"
 rm -f "$tasks"
 echo "run.sh: done. failures (if any) listed above as FAIL lines; rerun to retry." >&2
