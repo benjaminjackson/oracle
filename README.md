@@ -42,27 +42,11 @@ The default path. Writes your question to a scratch file, then shells out to a b
 - **Explicitly:** `/oracle <question>`
 - **Automatically:** on phrases like "ask the oracle" or "oracle, ..."
 
-#### Why the scratch-file step
-
-macOS ships bash 3.2 by default, and a heredoc nested inside `$(...)` breaks the instant the body has a contraction (`don't`, `it's`) — a real parser bug, not a wording issue. The skill sidesteps it entirely: write the question to a plain text file with the Write tool (no shell parsing, so quotes and backticks are inert), then read it back with a bare `$(cat file)`.
-
 ### oracle (agent)
 
 Fallback only, for when the headless call can't run — no `claude` CLI on `PATH`, auth broken, sandboxed environment with no shell access. Same brief (shortest correct answer, lead with the word that matters), run as a proper subagent instead of a headless process: `Read`, `Grep`, `Glob`, `WebSearch`, `WebFetch`, ~6k tokens per question.
 
 The skill falls back to this agent automatically if the headless command fails, and says so when it does.
-
-## Repo structure
-
-```
-.claude-plugin/marketplace.json   # marketplace manifest (this repo)
-oracle/.claude-plugin/plugin.json # oracle plugin manifest
-oracle/agents/oracle.md           # fallback agent
-oracle/skills/oracle/SKILL.md     # headless-Fable skill
-evals/                            # permanent eval harness; evals/experiments/ holds each experiment's data + results
-```
-
-The `evals/` directory holds a bash+jq eval harness (generation, Sonnet judge, reporting) shared across experiments, each of which lives in its own folder under `evals/experiments/` with its own question corpus, run matrix, and results. See `evals/README.md`, and each experiment's own `README.md` (e.g. `evals/experiments/prompt-tuning-2026-07/README.md`) for its results/decision log.
 
 ## Author
 
