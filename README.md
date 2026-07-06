@@ -59,10 +59,10 @@ The skill falls back to this agent automatically if the headless command fails, 
 oracle/.claude-plugin/plugin.json # oracle plugin manifest
 oracle/agents/oracle.md           # fallback agent
 oracle/skills/oracle/SKILL.md     # headless-Fable skill
-evals/                            # permanent eval harness + committed results
+evals/                            # permanent eval harness; evals/experiments/ holds each experiment's data + results
 ```
 
-The `evals/` directory holds a bash+jq eval harness (corpus, generation, Sonnet judge, reporting) used to tune the skill's `--effort`/prompt configuration against answer quality per output token. See `evals/README.md`.
+The `evals/` directory holds a bash+jq eval harness (generation, Sonnet judge, reporting) shared across experiments, each of which lives in its own folder under `evals/experiments/` with its own question corpus, run matrix, and results. See `evals/README.md`, and each experiment's own `README.md` (e.g. `evals/experiments/prompt-tuning-2026-07/README.md`) for its results/decision log.
 
 ## Author
 
