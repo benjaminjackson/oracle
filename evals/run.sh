@@ -8,6 +8,10 @@ SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 ONLY="" IDS="" REPEATS=1 PAR=4
 while [ $# -gt 0 ]; do
   case "$1" in
+    -h|--help)
+      echo "usage: run.sh [--configs id1,id2] [--ids file-of-question-ids] [--repeats N] [--parallel N]" >&2
+      exit 0
+      ;;
     --configs)  ONLY="$2";    shift 2 ;;
     --ids)      IDS="$2";     shift 2 ;;
     --repeats)  REPEATS="$2"; shift 2 ;;

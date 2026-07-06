@@ -3,6 +3,13 @@
 #   judge_one.sh pw <base> <chall> <qid> <rep> <orient>
 #   judge_one.sh anchor <cfg> <qid> <rep>
 set -u
+case "${1:-}" in
+  -h|--help)
+    echo "usage: judge_one.sh pw <base> <chall> <qid> <rep> <orient>" >&2
+    echo "       judge_one.sh anchor <cfg> <qid> <rep>" >&2
+    exit 0
+    ;;
+esac
 kind=$1; shift
 
 mode=--safe-mode

@@ -5,6 +5,9 @@
 #  c) default-effort identification: output-token distributions on reasoning probes
 #  d) judge --json-schema shape check (Sonnet)
 set -u
+case "${1:-}" in
+  -h|--help) echo "usage: phase0.sh   (no args; run from inside an experiment directory)" >&2; exit 0 ;;
+esac
 mkdir -p results/phase0
 
 mode=--safe-mode

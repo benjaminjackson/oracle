@@ -9,10 +9,23 @@
 set -u
 SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+case "${1:-}" in
+  -h|--help)
+    echo "usage: judge.sh pairwise --base <cfg> --challenger <cfg> [--ids file] [--repeats N] [--parallel N]" >&2
+    echo "       judge.sh anchor [--configs id1,id2] [--repeats N] [--parallel N]" >&2
+    exit 0
+    ;;
+esac
+
 MODE="${1:-}"; shift || true
 BASE="" CHALL="" ONLY="" IDS="" REPEATS=1 PAR=4
 while [ $# -gt 0 ]; do
   case "$1" in
+    -h|--help)
+      echo "usage: judge.sh pairwise --base <cfg> --challenger <cfg> [--ids file] [--repeats N] [--parallel N]" >&2
+      echo "       judge.sh anchor [--configs id1,id2] [--repeats N] [--parallel N]" >&2
+      exit 0
+      ;;
     --base)       BASE="$2";    shift 2 ;;
     --challenger) CHALL="$2";   shift 2 ;;
     --configs)    ONLY="$2";    shift 2 ;;

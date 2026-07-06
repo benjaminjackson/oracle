@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # jq-only reporting over results/raw and results/judgments.
 set -u
+case "${1:-}" in
+  -h|--help) echo "usage: summary.sh   (no args; run from inside an experiment directory)" >&2; exit 0 ;;
+esac
 
 echo "== Generation stats per config =="
 cat results/raw/*.json 2>/dev/null | jq -s -r '
