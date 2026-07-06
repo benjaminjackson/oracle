@@ -1,18 +1,20 @@
-p1-default__arch-01__r1	tie	challenger
-p1-low__arch-05__r1	base	challenger
-p1-low__ops-01__r1	tie	base
-p0-medium__anchor-fin-1__r1	tie	challenger
-p0-low__fin-05__r1	tie	base
-p1-medium__anchor-arch-1__r1	tie	base
-p1-default__fin-01__r1	tie	challenger
-p0-low__fin-01__r1	tie	base
-p2-default__anchor-arch-1__r1	base	challenger
-p1-medium__ed-01__r1	tie	challenger
-p1-medium__arch-01__r1	tie	base
-p1-low__fin-01__r1	base	base
-p2-default__sys-02__r1	base	base
-p1-low__ops-03__r1	tie	base
-p0-medium__pos-01__r1	tie	challenger
-p1-medium__ops-03__r1	challenger	challenger
-p1-low__legal-01__r1	base	base
-p1-medium__ed-03__r1	base	base
+cal-01	challenger	challenger	p3-caveman	anchor-ops	1
+cal-02	base	challenger	p4-caveman-prompt	legal-01	1
+cal-03	base	challenger	p4-caveman-prompt	arch-05	1
+cal-04	challenger	challenger	p3-caveman	anchor-sys	1
+cal-05	challenger	base	p3-caveman	mkt-03	1
+cal-06	challenger	challenger	p3-caveman	mkt-01	1
+cal-07	base	challenger	p4-caveman-prompt	ed-03	1
+cal-08	challenger	base	p3-caveman	arch-03	1
+cal-09	tie	challenger	p3-caveman	sys-02	1
+cal-10	tie	base	p4-caveman-prompt	anchor-legal	1
+cal-11	challenger	challenger	p3-caveman	anchor-fin-1	1
+cal-12	tie	challenger	p3-caveman	legal-01	1
+cal-13	challenger	challenger	p3-caveman	ops-03	1
+cal-14	tie	base	p4-caveman-prompt	strat-03	1
+cal-15	tie	challenger	p3-caveman	fin-05	1
+cal-16	base	base	p4-caveman-prompt	ed-01	1
+cal-17	challenger	challenger	p4-caveman-prompt	mkt-01	1
+cal-18	tie	challenger	p3-caveman	pos-03	1
+cal-19	challenger	base	p4-caveman-prompt	mkt-03	1
+cal-20	tie	base	p4-caveman-prompt	arch-01	1

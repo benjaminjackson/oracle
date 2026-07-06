@@ -10,13 +10,21 @@ cd "$(dirname "$0")"
 KEY=results/calibration_key.tsv
 SHEET=results/calibration_sheet.md
 
+case "${1:-}" in
+  -h|--help)
+    echo "usage: calibrate.sh [N] [filter]   sample N blind pairs (default 18); filter is an optional challenger regex, e.g. 'caveman'" >&2
+    echo "       calibrate.sh score          score results/calibration_human.tsv against the hidden key" >&2
+    exit 0
+    ;;
+esac
+
 if [ "${1:-}" = "score" ]; then
   [ -s results/calibration_human.tsv ] || { echo "fill in results/calibration_human.tsv first (pair_id<TAB>A|B|tie)" >&2; exit 1; }
   join -t "$(printf '\t')" <(sort "$KEY") <(sort results/calibration_human.tsv) | awk -F '\t' '
-    # key: pair_id, judge_verdict(base/challenger/tie), a_is(base|challenger)
+    # key: pair_id, judge_verdict(base/challenger/tie), a_is(base|challenger), challenger, qid, rep
     # human: A|B|tie -> map through a_is to base/challenger/tie
     {
-      human = $4
+      human = $7
       if (human == "tie") h = "tie"
       else if ((human == "A") == ($3 == "base")) h = "base"
       else h = "challenger"
@@ -29,13 +37,24 @@ if [ "${1:-}" = "score" ]; then
 fi
 
 N="${1:-18}"
+case "$N" in
+  ''|*[!0-9]*) echo "calibrate.sh: N must be a positive integer (got '$N'). Try --help." >&2; exit 1 ;;
+esac
+FILTER="${2:-.}"   # optional challenger regex, e.g. 'caveman'
 mkdir -p results
 # Sample from combined pairwise judgments (one per qid/repeat/pair, decisive-or-tie alike)
-cat results/judgments/pw__*.json | jq -s -c '
+cat results/judgments/pw__*.json | jq -s -c --arg f "$FILTER" '
   [ group_by([.base, .challenger, .qid, .repeat])[] | select(length == 2) |
+    select(.[0].challenger | test($f)) |
     { base: .[0].base, challenger: .[0].challenger, qid: .[0].qid, repeat: .[0].repeat,
       verdict: (if .[0].winner == .[1].winner then .[0].winner else "tie" end) } ]' \
   | jq -c '.[]' | sort -R | head -n "$N" > /tmp/calib_sample.jsonl
+
+if [ ! -s /tmp/calib_sample.jsonl ]; then
+  echo "calibrate.sh: no pairwise judgments matched (filter '$FILTER') — nothing sampled, leaving existing $KEY/$SHEET untouched." >&2
+  rm -f /tmp/calib_sample.jsonl
+  exit 1
+fi
 
 : > "$KEY"
 {
@@ -47,10 +66,11 @@ cat results/judgments/pw__*.json | jq -s -c '
     base=$(printf '%s' "$row" | jq -r '.base'); chall=$(printf '%s' "$row" | jq -r '.challenger')
     qid=$(printf '%s' "$row" | jq -r '.qid'); rep=$(printf '%s' "$row" | jq -r '.repeat')
     verdict=$(printf '%s' "$row" | jq -r '.verdict')
-    pair_id="${chall}__${qid}__r${rep}"
+    # Opaque id: config names in the sheet would break blinding
+    pair_id=$(printf 'cal-%02d' "$i")
     # Randomize which config is shown as A
     if [ $((RANDOM % 2)) -eq 0 ]; then a_is=base; a_cfg=$base; b_cfg=$chall; else a_is=challenger; a_cfg=$chall; b_cfg=$base; fi
-    printf '%s\t%s\t%s\n' "$pair_id" "$verdict" "$a_is" >> "$KEY"
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$pair_id" "$verdict" "$a_is" "$chall" "$qid" "$rep" >> "$KEY"
     echo "## Pair $i (id: $pair_id)"
     echo
     jq -r --arg id "$qid" 'select(.id == $id) | "**Q:** " + .q' questions.jsonl
