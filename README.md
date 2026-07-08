@@ -11,23 +11,14 @@ A Claude Code plugin marketplace with one plugin: **oracle**, a fast, cheap way 
 
 ## Installation
 
-Inside a Claude Code session:
-
-### Add the marketplace
-
 ```
-/plugin marketplace add benjaminjackson/oracle
-```
-
-### Install oracle
-
-```
-/plugin install oracle@oracle
+claude plugin marketplace add benjaminjackson/oracle
+claude plugin install oracle@oracle
 ```
 
 (The repo lives at `benjaminjackson/oracle`; `oracle` is the marketplace's internal name, used only in the `plugin@marketplace` install id above.)
 
-Confirm it's installed: run `/plugin` (Installed tab) or `/plugin list`.
+Confirm it's installed with `claude plugin list`.
 
 ## oracle
 
