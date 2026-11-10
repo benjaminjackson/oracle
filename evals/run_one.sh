@@ -14,10 +14,32 @@ cline=$(jq -c --arg id "$cfg" 'select(.id==$id)' configs.jsonl)
 prompt=$(printf '%s' "$cline" | jq -r '.prompt')
 effort=$(printf '%s' "$cline" | jq -r '.effort // empty')
 tools=$(printf '%s' "$cline" | jq -r '.tools')
+# A config with "provider":"gemini" goes to Gemini 4 Carbon. Any other config goes to claude -p.
+provider=$(printf '%s' "$cline" | jq -r '.provider // "claude"')
 
 qtmp=$(mktemp)
 jq -r --arg id "$qid" 'select(.id==$id).q' questions.jsonl > "$qtmp"
 [ -s "$qtmp" ] || { echo "FAIL $cfg $qid r$rep (no such question)" >&2; rm -f "$qtmp"; exit 1; }
+
+if [ "$provider" = "gemini" ]; then
+  # The skill's own script makes the call, so the eval measures what ships.
+  # Its --json output already has answer, usage.output_tokens and total_cost_usd,
+  # which are the fields summary.sh reads. Thinking tokens are in usage.thought_tokens.
+  SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
+  ptmp=$(mktemp)
+  printf '%s' "$prompt" > "$ptmp"
+  out=$("$SELF_DIR/../oracle/skills/oracle/gemini_oracle.sh" "$qtmp" --system-prompt-file "$ptmp" --json 2>/dev/null)
+  rm -f "$qtmp" "$ptmp"
+  if printf '%s' "$out" | jq -e '.answer != null' > /dev/null 2>&1; then
+    printf '%s' "$out" | jq -c --arg config "$cfg" --arg qid "$qid" --argjson rep "$rep" \
+      '{config:$config, qid:$qid, repeat:$rep, num_turns:1} + .' \
+      > "$out_file.tmp" && mv "$out_file.tmp" "$out_file"
+    echo "ok   $cfg $qid r$rep"
+    exit 0
+  fi
+  echo "FAIL $cfg $qid r$rep" >&2
+  exit 1
+fi
 
 mode=--safe-mode
 [ -n "${ANTHROPIC_API_KEY:-}" ] && mode=--bare

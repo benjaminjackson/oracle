@@ -54,7 +54,14 @@ own `configs.jsonl` + `questions.jsonl`, `cd` into it, and run the same
 scripts.
 
 All calls run on subscription quota (`--safe-mode`) unless `ANTHROPIC_API_KEY`
-is set (then `--bare`). Everything is resume-safe; interrupt freely at quota
+is set (then `--bare`). The exception is a config with `"provider":"gemini"` in
+`configs.jsonl`: `run_one.sh` sends those questions to Gemini 4 Carbon through
+the skill's own `gemini_oracle.sh`, which needs `GEMINI_API_KEY` and bills the
+Google project. For those configs the `effort` and `tools` fields have no
+effect, and thinking tokens are recorded apart from output tokens, in
+`usage.thought_tokens`. `total_cost_usd` is the token cost only; the Google
+Search fee, which applies only after Google's free monthly allowance, is in
+`search_fee_usd_if_billed`. Everything is resume-safe; interrupt freely at quota
 windows.
 
 ## Decision rule
