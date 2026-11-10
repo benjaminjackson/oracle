@@ -11,7 +11,10 @@ fallback (robust, pricier path).
 .claude-plugin/marketplace.json    # marketplace manifest, points at ./oracle
 oracle/.claude-plugin/plugin.json  # oracle plugin manifest
 oracle/skills/oracle/SKILL.md      # default path: shells out to headless `claude -p`
-oracle/agents/oracle.md            # fallback subagent, used only if the shell-out fails
+oracle/skills/oracle/system_prompt.txt  # the Oracle persona; both skill paths send this file
+oracle/skills/oracle/gemini_oracle.sh   # opt-in Gemini 4 Carbon path: one call to Google's Interactions API
+oracle/skills/oracle/gemini_price.sh    # reads Gemini prices from Google's pricing page, fails closed
+oracle/agents/oracle.md            # fallback subagent, used only if the Fable shell-out fails
 evals/                             # eval harness (shared scripts) + evals/experiments/<name>/ (data + results)
 ```
 
@@ -24,7 +27,7 @@ bash 3.2 on macOS breaks on contractions in that construct — then runs:
 ```
 claude -p $mode --model fable --output-format json \
   --tools "WebSearch" --allowedTools "WebSearch" \
-  --system-prompt "<Oracle persona>" < /dev/null \
+  --system-prompt "$(cat system_prompt.txt)" < /dev/null \
   "$(cat "$Q")"
 ```
 
@@ -48,6 +51,52 @@ The agent (`oracle/agents/oracle.md`) is a fallback only: same persona,
 the skill's shell-out fails (no `claude` CLI on PATH, broken auth, sandboxed
 environment). It costs roughly 6k tokens/question vs ~200 for the skill —
 strictly worse but works when the cheap path can't run at all.
+
+## The Gemini path (opt-in)
+
+Fable is the default. When the user says "ask Gemini", "gemini oracle", or
+`/oracle --gemini <question>`, the skill runs `gemini_oracle.sh <question
+file>` in place of the `claude -p` command. The question file is written the
+same way.
+
+- The script calls `POST /v1beta/interactions` (the Interactions API, with the
+  header `Api-Revision: 2026-05-20`) for model `gemini-4-carbon`. It sends
+  `system_prompt.txt` as `system_instruction`, the tool
+  `{"type":"google_search"}`, and `store: false`. The thinking level is
+  Google's default.
+- It needs `GEMINI_API_KEY` in the environment. The key goes to curl through
+  `--header @<(printf ...)`, so it is not on a command line. Never print it.
+- The answer is the text of the `model_output` items in the response's
+  `steps` array. Token counts are in `usage`.
+- **No Google response has a price in it.** Cost = tokens x price, and
+  `gemini_price.sh` reads the price from
+  `https://aistudio.google.com/docs/pricing.md` (the "Standard" tab of the
+  Gemini 4 Carbon section, paid tier column). The page copy is in
+  `~/.cache/oracle/gemini-pricing.md` and is downloaded again when it is more
+  than 24 hours old. Price cells have dates in them ("$2.00 through November
+  30, 2026. $4.00 starting December 1, 2026."), and the script picks the
+  price for today.
+- **The price script fails closed.** If the page is not exactly as expected,
+  it exits non-zero and the stats line says `cost unknown`. Never add a
+  hard-coded or fallback price. When Google changes the page, the correct fix
+  is to update the parser, with a test for the new shape.
+- Cost formula, checked against real responses: `(input - cached) x input
+  price + cached x caching price + (output + thinking) x output price`.
+  Cached tokens are a part of `total_input_tokens`. If `usage` is absent,
+  does not add up, or reports tool-use tokens, the cost is `cost unknown`.
+- Google Search is billed per search after 5,000 free searches per month, and
+  no API reports how much of that allowance is left. So the stats line shows
+  the search fee as a second amount ("free in the first 5000 per month, else
+  $X"), never added to the token cost. `gemini_price.sh --search-fee` reads
+  the fee from the same page.
+- **No fallback.** On an API error the script prints Google's error and
+  exits non-zero. The `oracle` subagent runs only Claude models, so it cannot
+  stand in for Gemini.
+- Both scripts must run on macOS stock `/bin/bash` 3.2.
+- The eval for this path is `evals/experiments/gemini-carbon-2026-11/`. A
+  config with `"provider":"gemini"` in `configs.jsonl` makes `run_one.sh`
+  call `gemini_oracle.sh --json`. Unlike the Fable path on a subscription,
+  every Gemini eval call is billed.
 
 ## evals/ — the eval harness
 

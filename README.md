@@ -28,11 +28,21 @@ The default path. Writes your question to a scratch file, then shells out to a b
 - **Explicitly:** `/oracle <question>`
 - **Automatically:** on phrases like "ask the oracle" or "oracle, ..."
 
+#### Asking Gemini instead
+
+Fable is the default. To send a question to Google's Gemini 4 Carbon instead, say "ask Gemini" or "gemini oracle", or run `/oracle --gemini <question>`. The question, the Oracle system prompt, and the shape of the answer are the same. Gemini uses Google Search in place of `WebSearch`.
+
+This path needs a `GEMINI_API_KEY` in your environment, from a Google project with billing on. Gemini 4 Carbon is not available on Google's free tier.
+
+Google's API does not report what a call cost, so the skill calculates it: token counts multiplied by the prices on [Google's pricing page](https://aistudio.google.com/docs/pricing.md). The skill keeps a copy of that page in `~/.cache/oracle/` and downloads it again when the copy is more than 24 hours old. If the skill cannot read a price from the page, the stats line says `cost unknown` and still shows the token counts. It never guesses a price. Google Search is billed apart from tokens: a fee per search (read from the same pricing page), after a free monthly allowance. No API says how much of that allowance is left, so the skill cannot know if a search was billed. The stats line shows the search fee as a second amount, for example `$0.009754 + 5 searches (free in the first 5000 per month, else $0.07)`. When searches are billed, they can cost more than the tokens.
+
+If the Gemini call fails, the skill shows Google's error message and stops. There is no fallback, because the fallback agent can only run Claude models.
+
 ### oracle (agent)
 
 Fallback only, for when the headless call can't run — no `claude` CLI on `PATH`, auth broken, sandboxed environment with no shell access. Same brief (shortest correct answer, lead with the word that matters), run as a proper subagent instead of a headless process: `Read`, `Grep`, `Glob`, `WebSearch`, `WebFetch`, ~6k tokens per question.
 
-The skill falls back to this agent automatically if the headless command fails, and says so when it does.
+The skill falls back to this agent automatically if the headless Fable command fails, and says so when it does. A failed Gemini call does not fall back.
 
 ## Author
 
