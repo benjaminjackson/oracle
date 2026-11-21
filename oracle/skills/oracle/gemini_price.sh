@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Print today's Gemini 4 Carbon prices, read from Google's pricing page.
+# Print today's Gemini 4 Neon prices, read from Google's pricing page.
 #
 # Why this exists: no Gemini API response has a cost field, so the oracle skill
 # must multiply token counts by a price. The price changes on known dates, so
@@ -26,7 +26,7 @@ set -u
 
 PRICING_URL="https://aistudio.google.com/docs/pricing.md"
 CACHE_FILE="$HOME/.cache/oracle/gemini-pricing.md"
-MODEL_HEADING='## Gemini 4 Carbon  {% id="gemini-4-carbon" %}'
+MODEL_HEADING='## Gemini 4 Neon  {% id="gemini-4-neon" %}'
 PAID_COLUMN_TITLE="Paid Tier, per 1M tokens in USD"
 ALLOWED_NOTE="Implicit caching only (explicit caching is not supported)."
 
@@ -100,12 +100,12 @@ refresh_cache() {
   # Keep the download only if it looks like the pricing page. A truncated or
   # wrong page must not replace the cache.
   if ! grep --quiet --fixed-strings --line-regexp "$MODEL_HEADING" "$download_file"; then
-    fail "the downloaded page has no Gemini 4 Carbon heading"
+    fail "the downloaded page has no Gemini 4 Neon heading"
   fi
   mv "$download_file" "$CACHE_FILE" || fail "cannot write $CACHE_FILE"
 }
 
-# Print the "Standard" tab of the Gemini 4 Carbon section of the pricing page.
+# Print the "Standard" tab of the Gemini 4 Neon section of the pricing page.
 # Fails unless there is exactly one such heading and exactly one such tab.
 # The Batch, Flex and Priority tabs have other prices, so they must be left out.
 standard_tab_of_model_section() {
@@ -322,7 +322,7 @@ if ! [ -s "$pricing_file" ]; then
 fi
 
 standard_tab=$(standard_tab_of_model_section "$pricing_file") \
-  || fail "expected exactly one Gemini 4 Carbon section with one Standard tab"
+  || fail "expected exactly one Gemini 4 Neon section with one Standard tab"
 
 # Make sure the third column is still the paid tier, priced per 1M tokens.
 paid_column_title=$(printf '%s\n' "$standard_tab" | paid_cell_of_row "Feature") \

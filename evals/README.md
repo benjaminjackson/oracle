@@ -55,7 +55,7 @@ scripts.
 
 All calls run on subscription quota (`--safe-mode`) unless `ANTHROPIC_API_KEY`
 is set (then `--bare`). The exception is a config with `"provider":"gemini"` in
-`configs.jsonl`: `run_one.sh` sends those questions to Gemini 4 Carbon through
+`configs.jsonl`: `run_one.sh` sends those questions to Gemini 4 Neon through
 the skill's own `gemini_oracle.sh`, which needs `GEMINI_API_KEY` and bills the
 Google project. For those configs the `effort` and `tools` fields have no
 effect, and thinking tokens are recorded apart from output tokens, in

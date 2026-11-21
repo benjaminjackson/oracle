@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Send one question to Gemini 4 Carbon and print the answer and its cost.
+# Send one question to Gemini 4 Neon and print the answer and its cost.
 #
 # Why this exists: it is the opt-in "ask Gemini" path of the oracle skill.
 # It uses the same Oracle system prompt as the Fable path, with Google Search
@@ -33,7 +33,7 @@ set -u -o pipefail
 
 API_URL="https://generativelanguage.googleapis.com/v1beta/interactions"
 API_REVISION="2026-05-20"
-MODEL="gemini-4-carbon"
+MODEL="gemini-4-neon"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 question_file=""

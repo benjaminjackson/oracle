@@ -30,9 +30,9 @@ The default path. Writes your question to a scratch file, then shells out to a b
 
 #### Asking Gemini instead
 
-Fable is the default. To send a question to Google's Gemini 4 Carbon instead, say "ask Gemini" or "gemini oracle", or run `/oracle --gemini <question>`. The question, the Oracle system prompt, and the shape of the answer are the same. Gemini uses Google Search in place of `WebSearch`.
+Fable is the default. To send a question to Google's Gemini 4 Neon instead, say "ask Gemini" or "gemini oracle", or run `/oracle --gemini <question>`. The question, the Oracle system prompt, and the shape of the answer are the same. Gemini uses Google Search in place of `WebSearch`.
 
-This path needs a `GEMINI_API_KEY` in your environment, from a Google project with billing on. Gemini 4 Carbon is not available on Google's free tier.
+This path needs a `GEMINI_API_KEY` in your environment, from a Google project with billing on. Gemini 4 Neon is not available on Google's free tier.
 
 Google's API does not report what a call cost, so the skill calculates it: token counts multiplied by the prices on [Google's pricing page](https://aistudio.google.com/docs/pricing.md). The skill keeps a copy of that page in `~/.cache/oracle/` and downloads it again when the copy is more than 24 hours old. If the skill cannot read a price from the page, the stats line says `cost unknown` and still shows the token counts. It never guesses a price. Google Search is billed apart from tokens: a fee per search (read from the same pricing page), after a free monthly allowance. No API says how much of that allowance is left, so the skill cannot know if a search was billed. The stats line shows the search fee as a second amount, for example `$0.009754 + 5 searches (free in the first 5000 per month, else $0.07)`. When searches are billed, they can cost more than the tokens.
 

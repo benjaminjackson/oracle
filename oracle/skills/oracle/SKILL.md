@@ -1,11 +1,11 @@
 ---
 name: oracle
-description: Ask the Oracle — a one-shot Fable answer from a stripped headless session (~1.3k tokens of overhead vs ~6k for the oracle subagent), or, only when the user asks for Gemini, a one-shot Gemini 4 Carbon answer. Use when the user says "ask the oracle", "oracle,", or "/oracle <question>". Also use when the user says "ask Gemini", "gemini oracle", or "/oracle --gemini <question>".
+description: Ask the Oracle — a one-shot Fable answer from a stripped headless session (~1.3k tokens of overhead vs ~6k for the oracle subagent), or, only when the user asks for Gemini, a one-shot Gemini 4 Neon answer. Use when the user says "ask the oracle", "oracle,", or "/oracle <question>". Also use when the user says "ask Gemini", "gemini oracle", or "/oracle --gemini <question>".
 ---
 
 Send the question to a bare headless Fable session, then present its answer to the user in your own words, along with the token/cost stats for that call.
 
-Fable is the default. Use Gemini 4 Carbon only when the user asks for it: "ask Gemini", "gemini oracle", or `/oracle --gemini <question>`. In that case do step 1 below, then follow "Gemini path" in place of step 2.
+Fable is the default. Use Gemini 4 Neon only when the user asks for it: "ask Gemini", "gemini oracle", or `/oracle --gemini <question>`. In that case do step 1 below, then follow "Gemini path" in place of step 2.
 
 Never put a heredoc inside `$(...)` (i.e. `q=$(cat <<'EOF' ... EOF)`). On macOS's stock `/bin/bash` (3.2 — an old pre-GPLv3 build Apple never upgraded), a heredoc nested in a command substitution breaks the parser the instant the body contains a single quote (`don't`, `it's`, any contraction) — `unexpected EOF while looking for matching`. It's a real bash 3.2 bug, not a wording problem, and it reproduces even for a one-word heredoc; it doesn't happen in zsh or bash 4+, which is why it's intermittent depending on what's invoking the script.
 
@@ -36,7 +36,7 @@ Only when the user asks for Gemini. Write the question file as in step 1, then r
 "${CLAUDE_SKILL_DIR}/gemini_oracle.sh" <scratchpad>/oracle_question.txt
 ```
 
-The script sends the question to Gemini 4 Carbon (`gemini-4-carbon`) through Google's Interactions API, with the same Oracle system prompt and with Google Search in place of WebSearch. It prints the answer, then a stats line such as `[447 in / 205 out + 681 thinking tokens · $0.009754 + 5 searches (free in the first 5000 per month, else $0.07)]`. The part after `+` is there only when Gemini searched.
+The script sends the question to Gemini 4 Neon (`gemini-4-neon`) through Google's Interactions API, with the same Oracle system prompt and with Google Search in place of WebSearch. It prints the answer, then a stats line such as `[447 in / 205 out + 681 thinking tokens · $0.009754 + 5 searches (free in the first 5000 per month, else $0.07)]`. The part after `+` is there only when Gemini searched.
 
 - It needs `GEMINI_API_KEY` in the environment. Never print or read the key value. If the script says the key is not set, tell the user to export it and stop.
 - No API response from Google has a price in it. The script calculates the cost from the token counts and the prices that `gemini_price.sh` reads from Google's pricing page (cached for 24 hours in `~/.cache/oracle/`). If that lookup fails, the stats line says `cost unknown`. Show it as it is. Never fill in a price yourself.

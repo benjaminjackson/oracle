@@ -14,7 +14,7 @@ cline=$(jq -c --arg id "$cfg" 'select(.id==$id)' configs.jsonl)
 prompt=$(printf '%s' "$cline" | jq -r '.prompt')
 effort=$(printf '%s' "$cline" | jq -r '.effort // empty')
 tools=$(printf '%s' "$cline" | jq -r '.tools')
-# A config with "provider":"gemini" goes to Gemini 4 Carbon. Any other config goes to claude -p.
+# A config with "provider":"gemini" goes to Gemini 4 Neon. Any other config goes to claude -p.
 provider=$(printf '%s' "$cline" | jq -r '.provider // "claude"')
 
 qtmp=$(mktemp)

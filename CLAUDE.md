@@ -12,7 +12,7 @@ fallback (robust, pricier path).
 oracle/.claude-plugin/plugin.json  # oracle plugin manifest
 oracle/skills/oracle/SKILL.md      # default path: shells out to headless `claude -p`
 oracle/skills/oracle/system_prompt.txt  # the Oracle persona; both skill paths send this file
-oracle/skills/oracle/gemini_oracle.sh   # opt-in Gemini 4 Carbon path: one call to Google's Interactions API
+oracle/skills/oracle/gemini_oracle.sh   # opt-in Gemini 4 Neon path: one call to Google's Interactions API
 oracle/skills/oracle/gemini_price.sh    # reads Gemini prices from Google's pricing page, fails closed
 oracle/agents/oracle.md            # fallback subagent, used only if the Fable shell-out fails
 evals/                             # eval harness (shared scripts) + evals/experiments/<name>/ (data + results)
@@ -60,7 +60,7 @@ file>` in place of the `claude -p` command. The question file is written the
 same way.
 
 - The script calls `POST /v1beta/interactions` (the Interactions API, with the
-  header `Api-Revision: 2026-05-20`) for model `gemini-4-carbon`. It sends
+  header `Api-Revision: 2026-05-20`) for model `gemini-4-neon`. It sends
   `system_prompt.txt` as `system_instruction`, the tool
   `{"type":"google_search"}`, and `store: false`. The thinking level is
   Google's default.
@@ -71,11 +71,11 @@ same way.
 - **No Google response has a price in it.** Cost = tokens x price, and
   `gemini_price.sh` reads the price from
   `https://aistudio.google.com/docs/pricing.md` (the "Standard" tab of the
-  Gemini 4 Carbon section, paid tier column). The page copy is in
+  Gemini 4 Neon section, paid tier column). The page copy is in
   `~/.cache/oracle/gemini-pricing.md` and is downloaded again when it is more
-  than 24 hours old. Price cells have dates in them ("$2.00 through November
-  30, 2026. $4.00 starting December 1, 2026."), and the script picks the
-  price for today.
+  than 24 hours old. Neon's price cells are plain amounts ("$3.00"). The
+  parser also accepts dated cells ("$2.00 through November 30, 2026. $4.00
+  starting December 1, 2026.") and picks the price for today.
 - **The price script fails closed.** If the page is not exactly as expected,
   it exits non-zero and the stats line says `cost unknown`. Never add a
   hard-coded or fallback price. When Google changes the page, the correct fix
@@ -93,7 +93,8 @@ same way.
   exits non-zero. The `oracle` subagent runs only Claude models, so it cannot
   stand in for Gemini.
 - Both scripts must run on macOS stock `/bin/bash` 3.2.
-- The eval for this path is `evals/experiments/gemini-carbon-2026-11/`. A
+- The eval for this path is `evals/experiments/gemini-carbon-2026-11/`. It
+  measured Gemini 4 Carbon, before the switch to Neon. A
   config with `"provider":"gemini"` in `configs.jsonl` makes `run_one.sh`
   call `gemini_oracle.sh --json`. Unlike the Fable path on a subscription,
   every Gemini eval call is billed.
