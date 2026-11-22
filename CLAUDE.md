@@ -93,8 +93,9 @@ same way.
   exits non-zero. The `oracle` subagent runs only Claude models, so it cannot
   stand in for Gemini.
 - Both scripts must run on macOS stock `/bin/bash` 3.2.
-- The eval for this path is `evals/experiments/gemini-carbon-2026-11/`. It
-  measured Gemini 4 Carbon, before the switch to Neon. A
+- The eval for this path is `evals/experiments/gemini-neon-2026-11/`. The
+  earlier `gemini-carbon-2026-11/` measured Gemini 4 Carbon, before the
+  switch to Neon. A
   config with `"provider":"gemini"` in `configs.jsonl` makes `run_one.sh`
   call `gemini_oracle.sh --json`. Unlike the Fable path on a subscription,
   every Gemini eval call is billed.
